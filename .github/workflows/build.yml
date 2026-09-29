@@ -113,7 +113,6 @@ jobs:
       - name: Build VSCode Web
         run: |
           cd vscode
-          npm run gulp compile-build-without-mangling # out-build
           npm run gulp vscode-web-ci                  # out-vscode-web .build/web/extensions
 
       - name: Copy build
