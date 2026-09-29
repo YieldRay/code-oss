@@ -24,7 +24,7 @@ jobs:
       package_version: ${{ steps.get_release_tag.outputs.package_version }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Resolve target VSCode version
         id: get_release_tag
@@ -83,22 +83,22 @@ jobs:
     if: needs.check_update.outputs.should_build == 'true'
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       # git clone --branch x.y.z --single-branch https://github.com/microsoft/vscode.git --depth=1
       - name: Checkout VSCode repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: microsoft/vscode
           ref: ${{ needs.check_update.outputs.vscode_ref }}
           path: vscode
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           repository: microsoft/vscode-loc
           path: vscode-loc
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version-file: vscode/.nvmrc
           registry-url: https://registry.npmjs.org
@@ -113,7 +113,6 @@ jobs:
       - name: Build VSCode Web
         run: |
           cd vscode
-          npm run gulp compile-build-without-mangling # out-build
           npm run gulp vscode-web-ci                  # out-vscode-web .build/web/extensions
 
       - name: Copy build
