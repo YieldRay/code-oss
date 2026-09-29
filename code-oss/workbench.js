@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 // source: src/vs/code/browser/workbench/workbench.ts
-import product, { Emitter, Disposable, URI, create } from './out/vs/workbench/workbench.web.main.internal.js';
+import { Emitter, Disposable, URI, create } from './out/vs/workbench/workbench.web.main.internal.js';
 
 const mainWindow = window;
 function isEqual(a, b) {
@@ -312,8 +312,7 @@ export default function createWorkbench(domElement, configuration) {
     // Create workbench
     create(domElement || mainWindow.document.body, {
         ...config,
-        windowIndicator: config.windowIndicator ?? { label: '$(remote)', tooltip: `${product.nameShort} Web` },
-        settingsSyncOptions: config.settingsSyncOptions ? { enabled: config.settingsSyncOptions.enabled, } : undefined,
+        windowIndicator: config.windowIndicator ?? { label: '$(remote)', tooltip: `Code OSS Web` },
         workspaceProvider: WorkspaceProvider.create(config),
         urlCallbackProvider: new LocalStorageURLCallbackProvider(config.callbackRoute),
     });
