@@ -1,6 +1,6 @@
 # code-oss
 
-[![Build VSCode Web](https://github.com/YieldRay/vscode-web-build/actions/workflows/build.yml/badge.svg)](https://github.com/YieldRay/vscode-web-build/actions/workflows/build.yml)
+[![Build VSCode Web](https://github.com/YieldRay/code-oss/actions/workflows/build.yml/badge.svg)](https://github.com/YieldRay/code-oss/actions/workflows/build.yml)
 [![GitHub Release](https://img.shields.io/github/v/release/YieldRay/code-oss)](https://github.com/YieldRay/code-oss/releases)
 [![NPM](https://img.shields.io/npm/v/code-oss)](https://www.npmjs.com/package/code-oss)
 
@@ -23,11 +23,11 @@ Minimal Setup.
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no"
     />
-    <link rel="stylesheet" href="https://raw.esm.sh/code-oss@latest/out/vs/workbench/workbench.web.main.internal.css" />
+    <link rel="stylesheet" href="https://unpkg.com/code-oss@latest/out/vs/workbench/workbench.web.main.internal.css" />
   </head>
   <body></body>
   <script type="module">
-    const CDN_PREFIX = "https://raw.esm.sh/code-oss@latest";
+    const CDN_PREFIX = "https://unpkg.com/code-oss@latest";
     globalThis._VSCODE_FILE_ROOT = `${CDN_PREFIX}/out/`;
     await import(`${CDN_PREFIX}/out/nls.messages.js`);
     // You can implement `workbench.js` yourself; this project provides a convenient implementation for quick setup
@@ -42,7 +42,7 @@ Most of the time, you'll want to set up a custom built-in extension.
 For example, [this project](https://github.com/YieldRay/vscode-web-extension-memfs) sets up a memfs so all files can be stored in the browser memory.
 
 ```js
-const CDN_PREFIX = "https://raw.esm.sh/code-oss@latest";
+const CDN_PREFIX = "https://unpkg.com/code-oss@latest";
 globalThis._VSCODE_FILE_ROOT = `${CDN_PREFIX}/out/`;
 await import(`${CDN_PREFIX}/out/nls.messages.js`);
 const { default: init } = await import(`${CDN_PREFIX}/workbench.js`);

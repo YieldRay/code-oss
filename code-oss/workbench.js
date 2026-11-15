@@ -5,6 +5,42 @@
 // source: src/vs/code/browser/workbench/workbench.ts
 import { Emitter, Disposable, URI, create } from './out/vs/workbench/workbench.web.main.internal.js';
 
+// source: src/vs/base/common/marshalling.ts + marshallingIds.ts
+// The bundle only exports `URI`, not `marshalling#parse`, so the payload is revived here.
+const MarshalledId = { Uri: 1, Regexp: 2, Date: 17 };
+
+function revive(obj, depth = 0) {
+	if (!obj || depth > 200) {
+		return obj;
+	}
+	if (typeof obj === 'object') {
+		switch (obj.$mid) {
+			case MarshalledId.Uri: return URI.revive(obj);
+			case MarshalledId.Regexp: return new RegExp(obj.source, obj.flags);
+			case MarshalledId.Date: return new Date(obj.source);
+		}
+		if (obj instanceof Uint8Array) {
+			return obj;
+		}
+		if (Array.isArray(obj)) {
+			for (let i = 0; i < obj.length; ++i) {
+				obj[i] = revive(obj[i], depth + 1);
+			}
+		} else {
+			for (const key in obj) {
+				if (Object.hasOwnProperty.call(obj, key)) {
+					obj[key] = revive(obj[key], depth + 1);
+				}
+			}
+		}
+	}
+	return obj;
+}
+
+function parse(text) {
+	return revive(JSON.parse(text));
+}
+
 const mainWindow = window;
 function isEqual(a, b) {
 	if (a === b) {
