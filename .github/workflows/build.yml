@@ -104,20 +104,42 @@ jobs:
           registry-url: https://registry.npmjs.org
           package-manager-cache: false
 
-      - name: Install Dependencies
+      - name: Install system packages
         run: |
           sudo apt-get update
           sudo apt-get install build-essential g++ libx11-dev libxkbfile-dev libsecret-1-dev libkrb5-dev python-is-python3
-          cd vscode && npm ci
+
+      - name: Install dependencies
+        run: |
+           cd vscode
+           npm install -g corepack
+           pnpm run preinstall
+           pnpm install -r
 
       - name: Build VSCode Web
         run: |
           cd vscode
-          npm run gulp vscode-web-ci                  # out-vscode-web .build/web/extensions
+          pnpm run gulp vscode-web-ci                  # out-vscode-web .build/web/extensions
 
       - name: Copy build
         run: |
           node nls.mjs
+
+          # VSCode 1.146 packages the web build itself into `vscode-web/`, next to
+          # the checkout. `remote/web` is now a member of the `remote` pnpm install
+          # root, so it no longer has a node_modules of its own.
+          if [ -d vscode-web ]; then
+            # `/package.json` is anchored: only the generated top-level one is skipped,
+            # the dependencies' own package.json files in node_modules are kept.
+            rsync -a --exclude /package.json vscode-web/ code-oss/
+          else
+            cp -vR vscode/remote/web/node_modules code-oss/
+            cp -vR vscode/out-vscode-web code-oss/out
+            cp -vR vscode/.build/web/extensions code-oss/
+          fi
+
+          # Not part of `vscode-web/`.
+          rsync -vt vscode/resources/server/* code-oss/
 
           deps_json=$(jq '.dependencies // {}' vscode/remote/web/package.json)
           deps_keys=$(jq '.dependencies // {} | keys' vscode/remote/web/package.json)
@@ -127,11 +149,6 @@ jobs:
           ' code-oss/package.json > code-oss/package.json.tmp
           cat code-oss/package.json.tmp
           mv code-oss/package.json.tmp code-oss/package.json
-
-          cp -vR vscode/remote/web/node_modules code-oss/
-          cp -vR vscode/out-vscode-web code-oss/out
-          cp -vR vscode/.build/web/extensions code-oss/
-          rsync -vt vscode/resources/server/* code-oss/
 
           cd code-oss && npm version "${{ needs.check_update.outputs.package_version }}" --no-git-tag-version
 
